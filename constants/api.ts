@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
+export const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL ?? 'https://api.freeapi.app';
 
 export const ENDPOINTS = {
   // Auth
@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   LOGIN: `${BASE_URL}/api/v1/users/login`,
   LOGOUT: `${BASE_URL}/api/v1/users/logout`,
   CURRENT_USER: `${BASE_URL}/api/v1/users/current-user`,
+  REFRESH_TOKEN: `${BASE_URL}/api/v1/users/refresh-token`,
   // Catalog
   COURSES: `${BASE_URL}/api/v1/public/randomproducts`,
   INSTRUCTORS: `${BASE_URL}/api/v1/public/randomusers`,

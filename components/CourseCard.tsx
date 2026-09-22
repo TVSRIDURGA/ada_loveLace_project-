@@ -19,7 +19,7 @@ function CourseCard({ course }: Props) {
   const router = useRouter();
   const { bookmarks, toggleBookmark } = useCourses();
   const isBookmarked = bookmarks.includes(String(course.id));
-  const thumbnail = getCourseThumbnail();
+  const thumbnail = course.thumbnail || getCourseThumbnail();
 
   return (
     <TouchableOpacity
@@ -35,7 +35,7 @@ function CourseCard({ course }: Props) {
       activeOpacity={0.85}
     >
       <Image
-        source={{ uri: getCourseThumbnail() }}
+        source={{ uri: thumbnail }}
         className="w-full h-40 bg-border"
         contentFit="cover"
         transition={200}

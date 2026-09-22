@@ -17,8 +17,17 @@ function RootNavigator() {
   const { isLoading, token } = useAuth();
 
   useEffect(() => {
-    requestNotificationPermission();
-    scheduleReminderNotification();
+    const initializeNotifications = async () => {
+      try {
+        const permissionGranted = await requestNotificationPermission();
+        if (permissionGranted) {
+          await scheduleReminderNotification();
+        }
+      } catch {
+      }
+    };
+
+    initializeNotifications();
   }, []);
 
   if (isLoading) {

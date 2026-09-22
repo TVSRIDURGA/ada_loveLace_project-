@@ -82,7 +82,7 @@ export async function fetchInstructors(limit = 20) {
 
 
 export async function verifyAccessToken(token: string) {
-  const response = await fetch(`${BASE_URL}/users/current-user`, {
+  const response = await fetch(ENDPOINTS.CURRENT_USER, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ export async function verifyAccessToken(token: string) {
 }
 
 export async function refreshAccessToken(refreshToken: string) {
-  const response = await fetch(`${BASE_URL}/users/refresh-token`, {
+  const response = await fetch(ENDPOINTS.REFRESH_TOKEN, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${refreshToken}`,

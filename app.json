@@ -12,15 +12,13 @@
       "bundleIdentifier": "com.edutech.lms"
     },
     "android": {
+      "package": "com.edutech.lms",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#2563EB",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png"
-      },
-         "android": {
-        "softwareKeyboardLayoutMode": "resize"
-      },
-      "package": "com.edutech.lms"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +34,8 @@
           "color": "#2563EB"
         }
       ],
-      "expo-image"
+      "expo-image",
+      "expo-font"
     ],
     "extra": {
       "router": {},

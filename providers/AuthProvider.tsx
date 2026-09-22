@@ -73,9 +73,17 @@ export default function AuthProvider({
           return;
         }
 
-        const isAccessTokenValid = await verifyAccessToken(token);
+        try {
+          const isAccessTokenValid = await verifyAccessToken(token);
 
-        if (isAccessTokenValid) {
+          if (isAccessTokenValid) {
+            dispatch({
+              type: 'LOGIN',
+              payload: { token, user },
+            });
+            return;
+          }
+        } catch {
           dispatch({
             type: 'LOGIN',
             payload: { token, user },

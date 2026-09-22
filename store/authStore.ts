@@ -32,11 +32,22 @@ export async function clearAuth() {
   await AsyncStorage.removeItem(USER_KEY);
 }
 
-export async function loadAuth(): Promise<{ token: string | null; user: User | null, refreshToken: string | null }> {
+export async function loadAuth(): Promise<{ token: string | null; user: User | null; refreshToken: string | null }> {
   const token = await SecureStore.getItemAsync(TOKEN_KEY);
   const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
   const userStr = await AsyncStorage.getItem(USER_KEY);
-  const user = userStr ? (JSON.parse(userStr) as User) : null;
+
+  let user: User | null = null;
+
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr) as User;
+    } catch {
+      user = null;
+      await AsyncStorage.removeItem(USER_KEY);
+    }
+  }
+
   return { token, user, refreshToken };
 }
 

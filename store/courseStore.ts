@@ -17,9 +17,20 @@ export interface Course {
 const BOOKMARKS_KEY = 'bookmarked_courses';
 const ENROLLED_KEY = 'enrolled_courses';
 
+function parseStoredList(value: string | null): string[] {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function loadBookmarks(): Promise<string[]> {
   const data = await AsyncStorage.getItem(BOOKMARKS_KEY);
-  return data ? JSON.parse(data) : [];
+  return parseStoredList(data);
 }
 
 export async function saveBookmarks(ids: string[]): Promise<void> {
@@ -28,7 +39,7 @@ export async function saveBookmarks(ids: string[]): Promise<void> {
 
 export async function loadEnrolled(): Promise<string[]> {
   const data = await AsyncStorage.getItem(ENROLLED_KEY);
-  return data ? JSON.parse(data) : [];
+  return parseStoredList(data);
 }
 
 export async function saveEnrolled(ids: string[]): Promise<void> {

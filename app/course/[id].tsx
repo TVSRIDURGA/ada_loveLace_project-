@@ -19,6 +19,22 @@ export default function CourseDetailScreen() {
   const { courses, bookmarks, enrolled, toggleBookmark, toggleEnroll } = useCourses();
 
   const course = courses.find((c) => String(c.id) === id);
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  useEffect(() => {
+    if (!course) return;
+
+    const loadAIInsights = async () => {
+      setAiLoading(true);
+      const result = await generateCourseInsights(course);
+      setAiInsights(result);
+      setAiLoading(false);
+    };
+
+    loadAIInsights();
+  }, [course]);
+
   if (!course) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -30,9 +46,6 @@ export default function CourseDetailScreen() {
   const isBookmarked = bookmarks.includes(String(course.id));
   const isEnrolled = enrolled.includes(String(course.id));
 
-  const [aiInsights, setAiInsights] = useState<any>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-
   const handleEnroll = async () => {
     await toggleEnroll(String(course.id));
     if (!isEnrolled) {
@@ -42,18 +55,10 @@ export default function CourseDetailScreen() {
 
   const loadAIInsights = async () => {
     setAiLoading(true);
-
     const result = await generateCourseInsights(course);
-
     setAiInsights(result);
     setAiLoading(false);
   };
-
-  useEffect(() => {
-    if (course) {
-      loadAIInsights();
-    }
-  }, [course?.id]);
 
   return (
     <ScrollView className="flex-1 bg-background" showsVerticalScrollIndicator={false}>
