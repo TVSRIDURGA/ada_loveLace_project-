@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
+  Image,
+  ScrollView,
   View,
   Text,
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useCourses } from '../../store/courseStore';
 import { fetchCourses, fetchInstructors } from '../../utils/api';
 import CourseCard from '../../components/CourseCard';
@@ -71,7 +74,8 @@ function buildCourses(products: ApiProduct[], users: ApiUser[]): Course[] {
 }
 
 export default function CoursesScreen() {
-  const { courses, setCourses, isLoading, error } = useCourses();
+  const { courses, recentCourses, setCourses, isLoading, error } = useCourses();
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -115,6 +119,54 @@ export default function CoursesScreen() {
     );
   }, [courses, search]);
 
+  const openRecentCourse = (courseId: string | number, thumbnail: string) => {
+    router.push({
+      pathname: `/course/${courseId}`,
+      params: { thumbnail },
+    });
+  };
+
+  const listHeader = (
+    <>
+      {recentCourses.length > 0 && (
+        <View className="mb-1">
+          <Text className="text-lg font-extrabold text-foreground mx-4 mb-2">
+            Continue Learning
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="px-4 gap-3"
+          >
+            {recentCourses.map((course) => (
+              <TouchableOpacity
+                key={String(course.id)}
+                className="w-44 bg-surface rounded-xl overflow-hidden border border-border"
+                onPress={() => openRecentCourse(course.id, course.thumbnail)}
+                activeOpacity={0.85}
+              >
+                <Image
+                  source={{ uri: course.thumbnail }}
+                  className="w-44 h-24 bg-border"
+                  resizeMode="cover"
+                />
+                <View className="p-2.5">
+                  <Text className="text-sm font-bold text-foreground" numberOfLines={2}>
+                    {course.title}
+                  </Text>
+                  <Text className="text-xs text-muted mt-1" numberOfLines={1}>
+                    {course.instructorName ?? course.category}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+      <SearchBar value={search} onChangeText={setSearch} />
+    </>
+  );
+
   return (
     <View className="flex-1 bg-background">
       <OfflineBanner />
@@ -122,9 +174,7 @@ export default function CoursesScreen() {
         data={filtered}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <CourseCard course={item} />}
-        ListHeaderComponent={
-          <SearchBar value={search} onChangeText={setSearch} />
-        }
+        ListHeaderComponent={listHeader}
         ListEmptyComponent={
           loading ? (
             <View className="items-center p-10">

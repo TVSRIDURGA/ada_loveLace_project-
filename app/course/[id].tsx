@@ -16,7 +16,14 @@ import { generateCourseInsights } from '@/utils/ai';
 export default function CourseDetailScreen() {
   const { id, thumbnail } = useLocalSearchParams<{ id: string; thumbnail: string }>();
   const router = useRouter();
-  const { courses, bookmarks, enrolled, toggleBookmark, toggleEnroll } = useCourses();
+  const {
+    courses,
+    bookmarks,
+    enrolled,
+    toggleBookmark,
+    toggleEnroll,
+    recordCourseView,
+  } = useCourses();
 
   const course = courses.find((c) => String(c.id) === id);
   const [aiInsights, setAiInsights] = useState<any>(null);
@@ -24,6 +31,8 @@ export default function CourseDetailScreen() {
 
   useEffect(() => {
     if (!course) return;
+
+    recordCourseView(course);
 
     const loadAIInsights = async () => {
       setAiLoading(true);
@@ -33,7 +42,7 @@ export default function CourseDetailScreen() {
     };
 
     loadAIInsights();
-  }, [course]);
+  }, [course, recordCourseView]);
 
   if (!course) {
     return (
