@@ -328,6 +328,98 @@ screenshots/
 | **Profile avatar is lost after reopening**                           | Bug / Persistence       | The selected profile image is stored only in component state, so it returns to the default image after the screen or app is recreated.                                             | Persist the selected image URI locally or upload it to the backend, then restore the saved image when the profile screen loads.                                                |
 | **Login response is force-cast without validation**                  | Validation              | The login response is force-cast to the expected type without checking whether required authentication fields are actually present.                                                | Validate the response before saving authentication data and show a clear error when required fields are missing or invalid.                                                    |
 
+## Implemented Bug Fix
+
+### Bookmark Interaction and Course Navigation
+
+**Problem**  
+The bookmark button was nested inside the course card's navigation `TouchableOpacity`. As a result, pressing the bookmark could also trigger navigation to the Course Details screen.
+
+**Root Cause**  
+The bookmark `Pressable` was inside the parent navigation touch target.
+
+**Solution**  
+The bookmark interaction was separated from the course navigation touch target. The course card now uses an independent navigation area while the bookmark action remains independent.
+
+**File Changed**  
+`components/CourseCard.tsx`
+
+**Expected Behavior**
+
+- Tapping the bookmark only adds/removes the bookmark.
+- Tapping the course image, title, description, or price opens Course Details.
+- Existing bookmark storage and navigation routes remain unchanged.
+
+**Validation**  
+TypeScript validation was run with:
+
+```bash
+npx tsc --noEmit
+```
+
+## Unique Feature
+
+### Continue Learning - Personalized Recent Courses
+
+**Purpose**  
+Help learners quickly return to courses they recently viewed without searching for them again.
+
+**How It Works**  
+When a user opens a valid course, a compact snapshot is stored locally. The Home screen displays a **Continue Learning** section containing the user's most recently viewed courses. Selecting one opens the existing Course Details screen.
+
+**Feature Details**
+
+- Stores up to 5 recently viewed courses.
+- The most recently viewed course appears first.
+- Opening the same course again does not create a duplicate.
+- The existing course is moved to the beginning of the list.
+- Uses a `lastViewedAt` timestamp.
+- Uses user-scoped storage: `recent_courses:${userId}`.
+- Stored data is validated before use.
+- Missing or invalid stored data safely falls back to an empty list.
+- No backend changes or new dependencies were required.
+- Existing bookmarks and enrollments were preserved.
+
+**Files Changed**
+
+- `store/courseStore.ts`
+- `providers/CourseProvider.tsx`
+- `app/course/[id].tsx`
+- `app/(tabs)/index.tsx`
+
+**User Flow**
+
+```text
+Open Course
+	-> Record course locally
+	-> Return to Home
+	-> Continue Learning appears
+	-> Tap recent course
+	-> Existing Course Details opens
+```
+
+**Important Accuracy Note**  
+This feature represents recently viewed courses. It does not track lesson completion or percentage-based learning progress.
+
+## Testing and Validation
+
+### Code Validation
+
+```bash
+npx tsc --noEmit
+```
+
+## Assignment Implementation Summary
+
+| Requirement | Implementation |
+|---|---|
+| Identify limitations and bugs | 12 findings documented with feasible solutions |
+| Fix at least one bug | Bookmark/navigation interaction fixed in `components/CourseCard.tsx` |
+| Add a unique feature | Continue Learning - Personalized Recent Courses |
+| Local persistence | AsyncStorage with user-scoped recent-course storage |
+| Code validation | `npx tsc --noEmit` passed successfully |
+| Documentation | Findings, bug fix, feature, and testing documented in README |
+
 
 
 ## Build Notes
